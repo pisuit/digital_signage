@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-configuration PUBLIC
+		"-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+		"http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd">
+<hibernate-configuration>
+    <session-factory>
+<!--     	<property name="hibernate.session_factory_name">java:/hibernate/session_factory</property> -->
+<!--     	<property name="hibernate.connection.datasource">java:jdbc/OracleDB/prd/meeting</property> -->
+<!--     	<property name="hibernate.transaction.factory_class">org.hibernate.transaction.JTATransactionFactory</property> -->
+<!--     	<property name="jta.UserTransaction">UserTransaction</property> -->
+<!-- 		<property name="hibernate.transaction.manager_lookup_class">org.hibernate.transaction.JBossTransactionManagerLookup</property> -->
+<!-- 		<property name="connection.charSet">tis620</property> -->
+<!-- 		<property name="dialect">org.hibernate.dialect.Oracle10gDialect</property> -->
+<!-- 		<property name="current_session_context_class">jta</property> -->
+<!-- 		<property name="cache.provider_class">org.hibernate.cache.NoCacheProvider</property> -->
+
+		<property name="hibernate.connection.driver_class">com.mysql.jdbc.Driver</property>
+		<property name="hibernate.connection.url">jdbc:mysql://appollo.aerothai.co.th:3306/misdb</property>
+		<property name="hibernate.connection.username">misdb</property>
+		<property name="hibernate.connection.password">1q2w3e4r</property>
+		<property name="hibernate.dialect">org.hibernate.dialect.MySQLDialect</property>
+		
+<!-- 		<property name="hibernate.show_sql">true</property> -->
+<!-- 		<property name="hibernate.format_sql">true</property> -->
+<!-- 		<property name="use_sql_comments">true</property> -->
+		
+		<mapping class="th.co.aerothai.digitalsignage.model.pr.ActiDateSelect"/>
+		<mapping class="th.co.aerothai.digitalsignage.model.pr.ActiOrganization"/>
+		<mapping class="th.co.aerothai.digitalsignage.model.pr.ActiPrsc"/>
+		<mapping class="th.co.aerothai.digitalsignage.model.pr.ActiPr"/>
+		<mapping class="th.co.aerothai.digitalsignage.model.pr.PrNews"/>
+	</session-factory>
+</hibernate-configuration>

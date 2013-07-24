@@ -1,0 +1,31 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<style type="text/css">
+.ui-widget,.ui-widget .ui-widget {
+	font-size: 90% !important;
+}
+</style>
+</h:head>
+<body>
+	<h:form>
+		<p:panel header="Aerothai E-Display">
+			<h:panelGrid columns="2" cellpadding="3">
+				<h:outputText value="Username" />
+				<p:inputText value="#{login.username}" />
+				<h:outputText value="Password" />
+				<p:password value="#{login.password}" />
+			</h:panelGrid>
+			<p:messages id="message"/>
+			<p:separator />
+			<p:commandButton value="Log In" icon="ui-icon-power"
+				action="#{login.login()}" update="message"/>
+		</p:panel>
+	</h:form>
+</body>
+</html>

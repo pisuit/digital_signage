@@ -1,0 +1,63 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions">
+
+<h:head>
+	<style type="text/css">
+.ui-widget,.ui-widget .ui-widget {
+	font-size: 90% !important;
+}
+</style>
+</h:head>
+<body>
+	<div style="position: fixed; width: 99%; z-index: 999">
+		<ui:include src="menu.xhtml" />
+	</div>
+	<p:spacer height="46" />
+	<h:form id="mainform">
+		<p:fieldset legend="User Management">
+			<p:dataTable rows="20" paginator="true" paginatorPosition="bottom"
+				value="#{userManager.userList}" var="user" id="usertable"
+				rowIndexVar="index" rowKey="#{user.id}" selectionMode="single"
+				selection="#{userManager.selectedUser}" style="width:49%;float:left;margin-right:20px">
+				<p:ajax event="rowSelect"
+					update=":mainform:inputgrid, :mainform:buttongrid" />
+				<p:column>
+					<h:outputText value="#{index+1}" />
+				</p:column>
+				<p:column headerText="Username" style="width:50%">
+					<h:outputText value="#{user.username}" />
+				</p:column>
+				<p:column headerText="Password" style="width:50%">
+					<h:outputText value="#{user.password}" />
+				</p:column>
+			</p:dataTable>
+			<p:panel header="Input Panel" style="width:49%;float:left">
+				<h:panelGrid columns="2" cellpadding="3" id="inputgrid">
+					<h:outputText value="Username" />
+					<p:inputText value="#{userManager.selectedUser.username}" />
+					<h:outputText value="Password" />
+					<p:inputText value="#{userManager.selectedUser.password}" />
+				</h:panelGrid>
+				<p:separator />
+				<h:panelGrid columns="3" cellpadding="3" id="buttongrid">
+					<p:commandButton value="Save" icon="ui-icon-disk"
+						action="#{userManager.saveUser()}" process="@this, inputgrid"
+						update="usertable, inputgrid, buttongrid" />
+					<p:commandButton value="Reset" icon="ui-icon-refresh"
+						action="#{userManager.reset()}" process="@this"
+						update="inputgrid, usertable, buttongrid" />
+					<p:commandButton value="Delete" icon="ui-icon-trash"
+						process="@this" update="inputgrid, usertable, buttongrid"
+						action="#{userManager.deleteUser()}"
+						disabled="#{userManager.selectedUser.id == null}" />
+				</h:panelGrid>
+			</p:panel>
+		</p:fieldset>
+	</h:form>
+</body>
+</html>

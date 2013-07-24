@@ -1,0 +1,98 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<style type="text/css">
+.ui-widget-content {
+	border: none;
+	background: none;
+}
+
+.ui-widget,.ui-widget .ui-widget {
+	font-size: 90% !important;
+}
+
+.ui-panel .ui-panel-content {
+	padding: 0;
+	width: 100%;
+	height: 100%
+}
+
+.stackclass {
+	
+}
+
+.ui-panel {
+	padding: none;
+}
+
+.feed .ui-widget-content {
+	background: rgba(249, 249, 249, 0.5)
+}
+</style>
+	<script type="text/javascript">
+	$(document).keypress(function(e){
+	   if(e.which == 109){
+		   dialog.show();
+		   }
+	});
+
+	function redirectToLocal(){
+		window.location.href='http://localhost:8081/digital_signage/display.jsf'+window.location.search
+	}
+	window.setInterval(function(){
+		  if(window.location.href.indexOf("localhost") > -1) {
+		
+		    } else {		
+		    	$.ajax({
+		    		   type: "GET",
+		    		   url: "profile.jsf",
+		    		   timeout: 3000,
+		    		   success: function(msg){
+		    		
+		    		   },
+		    		   error: function(XMLHttpRequest, textStatus, errorThrown) {
+		    			   redirectToLocal();
+		    		   }
+		    		 });			
+			 }
+		}, 10000);
+</script>
+</h:head>
+<body style="margin: 0;">
+	<h:form id="displayform">
+		<p:remoteCommand name="update" action="#{display.updateParent()}" />
+		<h:panelGroup binding="#{display.panelGroup}" layout="block"
+			style="width:#{display.width}px;height:#{display.height}px;background-color:##{display.bgColor};background-image:url('image/#{display.bgImage}');">
+		</h:panelGroup>
+		<p:poll interval="#{display.layoutTiming}"
+			listener="#{display.buildNextLayout()}"
+			rendered="#{!display.layoutProfileDisableed}" async="true"
+			partialSubmit="true" process="@this" />
+	</h:form>
+	<h:form>
+		<p:poll listener="#{display.ping()}" partialSubmit="true"
+			process="@this" async="true" interval="10" />
+	</h:form>
+	<h:form>
+		<p:poll interval="5" listener="#{display.poll()}" rendered="true"
+			async="true" partialSubmit="true" process="@this" />
+	</h:form>
+	<h:form id="feedpollform">
+		<p:poll interval="3600" async="true" process="@this"
+			partialSubmit="true" update="#{display.updatedPanelAsString}"
+			id="feedpoll" rendered="#{display.feedPollRendered}" />
+	</h:form>
+	<p:dialog header="Invalidate Session" widgetVar="dialog"
+		resizable="false" style="background:white">
+		<p:commandButton value="Yes" action="#{display.disconnect()}"
+			process="@this" icon="ui-icon-check" oncomplete="dialog.hide()" />
+		<p:commandButton value="No" type="button" icon="ui-icon-close"
+			onclick="dialog.hide()" />
+	</p:dialog>
+</body>
+</html>

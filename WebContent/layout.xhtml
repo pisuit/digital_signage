@@ -1,0 +1,304 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions">
+
+<h:head>
+	<style type="text/css">
+.ui-widget,.ui-widget .ui-widget {
+	font-size: 90% !important;
+}
+
+.ui-panel .ui-panel-content {
+	padding: 0;
+	width: 100%;
+	height: 100%
+}
+
+.stackclass {
+	
+}
+
+.ui-panel {
+	padding: none;
+}
+</style>
+	<script type="text/javascript">
+	function getComponentState(id){
+		var element = jQuery('[id="'+id+'"]');
+		var offset = element.offset();
+		var x = offset.left;
+		var y = offset.top;
+		var z = element.zIndex();
+		var height = element.height();
+		var width = element.width();
+		command([{name:'id',value:id}, {name:'x',value:x}, {name:'y',value:y}, {name:'height',value:height}, {name:'width',value:width}, {name:'z',value:z}]);
+		//alert('id='+id+'\n'+'x='+x+'\n'+'y='+y+'\n'+'height='+height+'\n'+'width='+width);
+	}
+	
+	/*window.setInterval(function() {
+		var ImageObject = new Image();
+		var imgurl = "http://172.16.72.137:8081/digital_signage/resources/images/multi.png";
+		ImageObject.src = imgurl;
+		if(ImageObject.height>0){
+			alert('The domain is available.');
+		} else {
+			alert('Domain unavailable');
+			}
+		}, 5000);*/
+</script>
+</h:head>
+<body style="margin: 0">
+	<div style="position: fixed; width: 100%; z-index: 999">
+		<ui:include src="menu.xhtml" />
+	</div>
+	<p:spacer height="45" />
+	<h:form id="mainform">
+		<p:hotkey bind="ctrl+s" action="#{layout.saveState()}"
+			oncomplete="update()" />
+		<p:remoteCommand name="command" action="#{layout.fromRemoteCommand()}" />
+		<p:remoteCommand name="update" action="#{layout.updateParent}" />
+		<p:overlayPanel for="overlaybtn" hideEffect="fade" showEffect="fade"
+			id="overlay">
+			<h:panelGrid columns="2" cellpadding="3" id="bgimagegrid">
+				<h:outputText value="Image" />
+				<p:selectOneMenu value="#{layout.selectedBGImage}" var="img"
+					converter="imageconverter" style="width:200px;">
+					<f:selectItem itemLabel="Select One" itemValue="" />
+					<f:selectItems value="#{layout.imageSelectItemList}" var="im"
+						itemLabel="#{im.imageName}" itemValue="#{im}" />
+					<p:column>
+						<p:graphicImage value="image/#{img.imageName}"
+							style="width:30px;height:30px" />
+					</p:column>
+					<p:column>
+						<h:outputText value="#{img.imageName}" />
+					</p:column>
+				</p:selectOneMenu>
+			</h:panelGrid>
+		</p:overlayPanel>
+		<p:toolbar style="position:fixed;width:99.5%;z-index:999">
+			<p:toolbarGroup align="left" style="margin-top:3px">
+				<p:menuButton value="Layout">
+					<p:menuitem value="Save" icon="ui-icon-disk"
+						onclick="saveLayoutDialog.show()" process="@this"
+						action="#{layout.saveState()}" />
+					<p:menuitem value="Load" icon="ui-icon-folder-open"
+						action="#{layout.createLayoutSelectItemList()}"
+						oncomplete="loadLayoutDialog.show()" update="loadgrid"
+						process="@this" />
+				</p:menuButton>
+				<p:separator />
+				<p:commandButton value="Add Region" action="#{layout.addRegion()}"
+					icon="ui-icon-plus" process="@this" oncomplete="update()" />
+				<p:commandButton value="Refresh" icon="ui-icon-refresh"
+					action="#{layout.saveState()}" oncomplete="update()"
+					process="@this" />
+				<p:separator />
+				<p:commandButton value="Clear" icon="ui-icon-trash"
+					action="#{layout.clear()}" update="panelgroup" process="@this" />
+				<p:separator />
+				<p:commandButton value="Invalidate Session" icon="ui-icon-link"
+					process="@this" action="#{layout.disconnect()}" />
+			</p:toolbarGroup>
+			<p:toolbarGroup align="right">
+				<h:panelGrid columns="9" cellpadding="3" id="righttoolbargrid">
+					<h:outputText value="Width" />
+					<p:inputText value="#{layout.width}" size="5" />
+					<h:outputText value="Height" />
+					<p:inputText value="#{layout.height}" size="5" />
+					<h:outputText value="BG Color" />
+					<p:colorPicker value="#{layout.bgColor}" style="z-index:9999" />
+					<h:outputText value="BG Image" />
+					<p:commandButton icon="ui-icon-image"
+						action="#{layout.createImageSelectItemList()}" id="overlaybtn"
+						style="width:42px;height:27px" process="@this"
+						update=":mainform:bgimagegrid" />
+					<p:commandButton icon="ui-icon-check"
+						process="@this, righttoolbargrid" oncomplete="update()"
+						action="#{layout.savePanelgroupProperty()}"
+						style="width:20px;height:20px" />
+				</h:panelGrid>
+			</p:toolbarGroup>
+		</p:toolbar>
+		<p:spacer height="60" />
+		<h:panelGroup binding="#{layout.panelGroup}" layout="block"
+			id="panelgroup"
+			style="width:#{layout.width}px;height:#{layout.height}px;background-color:##{layout.bgColor};background-image:url('image/#{layout.selectedBGImage.imageName}')">
+		</h:panelGroup>
+		<p:dialog header="Add Link Image" widgetVar="addImageDialog"
+			resizable="false" id="addlinkimagedialog">
+			<h:panelGrid columns="2" cellpadding="3" id="imageurlgrid">
+				<h:outputText value="URL" />
+				<p:inputText value="#{layout.imageURL}" size="50" />
+			</h:panelGrid>
+			<p:separator />
+			<p:commandButton value="OK" icon="ui-icon-check"
+				action="#{layout.addLinkImage()}" process="@this, imageurlgrid"
+				oncomplete="addImageDialog.hide();update()" />
+		</p:dialog>
+		<p:dialog header="Add Local Image" widgetVar="addImageDialog2"
+			resizable="false" id="addlocalimagedialog">
+			<h:panelGrid columns="2" cellpadding="3" id="imageurlgrid2">
+				<h:outputText value="Image" />
+				<p:selectOneMenu value="#{layout.selectedLocalImage}" var="img"
+					converter="imageconverter" style="width:200px;">
+					<f:selectItem itemLabel="Select One" itemValue="" />
+					<f:selectItems value="#{layout.imageSelectItemList}" var="im"
+						itemLabel="#{im.imageName}" itemValue="#{im}" />
+					<p:column>
+						<p:graphicImage value="image/#{img.imageName}"
+							style="width:30px;height:30px" />
+					</p:column>
+					<p:column>
+						<h:outputText value="#{img.imageName}" />
+					</p:column>
+				</p:selectOneMenu>
+			</h:panelGrid>
+			<p:separator />
+			<p:commandButton value="OK" icon="ui-icon-check"
+				action="#{layout.addLocalImage()}" process="@this, imageurlgrid2"
+				oncomplete="addImageDialog2.hide();update()" />
+		</p:dialog>
+		<p:dialog header="Add Youtube Video" widgetVar="addVideoDialog"
+			resizable="false" id="addyoutubevideodialog">
+			<h:panelGrid columns="2" cellpadding="3" id="videourlgrid">
+				<h:outputText value="URL" />
+				<p:inputText value="#{layout.videoURL}" size="50" />
+			</h:panelGrid>
+			<p:separator />
+			<p:commandButton value="OK" icon="ui-icon-check"
+				action="#{layout.addYoutubeVideo()}" process="@this, videourlgrid"
+				oncomplete="addVideoDialog.hide();update()" />
+		</p:dialog>
+		<p:dialog header="Add Local Video" widgetVar="addVideoDialog2"
+			resizable="false" id="addlocalvideodialog">
+			<h:panelGrid columns="2" cellpadding="3" id="videourlgrid2">
+				<h:outputText value="Video" />
+				<p:selectOneMenu value="#{layout.selectedVideo}">
+					<f:selectItems value="#{layout.videoSelectItemList}" />
+				</p:selectOneMenu>
+			</h:panelGrid>
+			<p:separator />
+			<p:commandButton value="OK" icon="ui-icon-check"
+				action="#{layout.addLocalVideo()}" process="@this, videourlgrid2"
+				oncomplete="addVideoDialog2.hide();update()" />
+		</p:dialog>
+		<p:dialog header="Add Text" widgetVar="addTextDialog"
+			resizable="false" id="addtextdialog">
+			<h:panelGrid columns="1" cellpadding="3" id="textgrid">
+				<pe:ckEditor value="#{layout.text}" checkDirtyInterval="0" />
+			</h:panelGrid>
+			<h:panelGrid columns="2" cellpadding="3" id="scrollgrid">
+				<p:selectBooleanCheckbox value="#{layout.textScroll}">
+					<p:ajax update="scrollinginputgrid" />
+				</p:selectBooleanCheckbox>
+				<h:outputText value="Enable Scrolling Text" />
+			</h:panelGrid>
+			<h:panelGrid columns="2" cellpadding="3" id="scrollinginputgrid">
+				<h:outputText value="Scroll Direction"
+					rendered="#{layout.textScroll}" />
+				<p:selectOneRadio value="#{layout.scrollDirection}"
+					rendered="#{layout.textScroll}">
+					<f:selectItem itemValue="left" itemLabel="Left" />
+					<f:selectItem itemValue="right" itemLabel="Right" />
+					<f:selectItem itemValue="up" itemLabel="Up" />
+					<f:selectItem itemValue="down" itemLabel="Down" />
+				</p:selectOneRadio>
+				<h:outputText value="Scroll Speed" rendered="#{layout.textScroll}" />
+				<p:inputText value="#{layout.scrollSpeed}" id="speedinput" size="2"
+					rendered="#{layout.textScroll}" />
+				<h:outputText value="" rendered="#{layout.textScroll}" />
+				<p:slider maxValue="20" minValue="1" for="speedinput"
+					rendered="#{layout.textScroll}" />
+			</h:panelGrid>
+			<p:separator />
+			<p:commandButton value="OK" icon="ui-icon-check"
+				action="#{layout.addText()}"
+				process="@this, textgrid, scrollinginputgrid, scrollgrid"
+				oncomplete="addTextDialog.hide();update()" />
+		</p:dialog>
+		<p:dialog header="Save Layout" widgetVar="saveLayoutDialog"
+			resizable="false">
+			<h:panelGrid columns="2" cellpadding="3" id="layoutgrid">
+				<h:outputText value="Name" />
+				<p:inputText value="#{layout.layoutName}" />
+			</h:panelGrid>
+			<p:separator />
+			<p:commandButton value="OK" icon="ui-icon-check"
+				action="#{layout.saveLayout()}" process="@this, layoutgrid"
+				oncomplete="update();saveLayoutDialog.hide()" />
+		</p:dialog>
+		<p:dialog header="Load Layout" widgetVar="loadLayoutDialog"
+			resizable="false">
+			<h:panelGrid columns="1" cellpadding="3" id="loadgrid">
+				<p:selectOneListbox value="#{layout.selectedLayoutID}">
+					<f:selectItems value="#{layout.layoutSelectItemList}" />
+				</p:selectOneListbox>
+			</h:panelGrid>
+			<p:separator />
+			<p:commandButton value="OK" icon="ui-icon-check"
+				action="#{layout.loadLayout()}" process="@this, loadgrid"
+				update="panelgroup, righttoolbargrid, overlay"
+				oncomplete="loadLayoutDialog.hide()" />
+		</p:dialog>
+		<p:dialog header="Add Web Page" widgetVar="addWebDialog"
+			resizable="false" id="addwebdialog">
+			<h:panelGrid columns="2" cellpadding="3" id="weburlgrid">
+				<h:outputText value="URL" />
+				<p:inputText value="#{layout.webURL}" size="50" />
+			</h:panelGrid>
+			<p:separator />
+			<p:commandButton value="OK" icon="ui-icon-check"
+				action="#{layout.addWeb()}" process="@this, weburlgrid"
+				oncomplete="addWebDialog.hide();update()" />
+		</p:dialog>
+		<p:dialog header="Properties" resizable="false"
+			widgetVar="addPropertiesDialog" id="addpropdialog">
+			<h:panelGrid columns="2" cellpadding="3" id="proppanelgrid">
+				<h:outputText value="Width" />
+				<p:inputText value="#{layout.panelWidth}" />
+				<h:outputText value="Height" />
+				<p:inputText value="#{layout.panelHeight}" />
+				<h:outputText value="Top" />
+				<p:inputText value="#{layout.panelTop}" />
+				<h:outputText value="Left" />
+				<p:inputText value="#{layout.panelLeft}" />
+			</h:panelGrid>
+			<p:separator />
+			<p:commandButton value="OK" icon="ui-icon-check"
+				process="@this, proppanelgrid"
+				action="#{layout.addPanelProperties()}"
+				oncomplete="addPropertiesDialog.hide();update()" />
+		</p:dialog>
+		<p:dialog header="Add Slide Show" widgetVar="addSlideShowDialog"
+			resizable="false" id="addslideshowdialog">
+			<p:pickList value="#{layout.imageDualList}" var="image"
+				itemLabel="#{image}" itemValue="#{image}" id="imagepicklist" />
+			<h:panelGrid columns="2" cellpadding="3" id="slidegrid">
+				<h:outputText value="Interval" />
+				<p:inputText value="#{layout.slideShowInterval}" size="10" />
+			</h:panelGrid>
+			<p:separator />
+			<p:commandButton value="OK" icon="ui-icon-check"
+				process="@this, imagepicklist, slidegrid"
+				oncomplete="addSlideShowDialog.hide();update()"
+				action="#{layout.addSlideShow()}" />
+		</p:dialog>
+		<p:dialog header="Add Feed" widgetVar="addFeedDialog"
+			resizable="false" id="addfeeddialog">
+			<h:panelGrid columns="2" cellpadding="3" id="feedgrid">
+				<h:outputText value="Url" />
+				<p:inputText value="#{layout.feedUrl}" size="50" />
+			</h:panelGrid>
+			<p:separator />
+			<p:commandButton value="OK" icon="ui-icon-check"
+				process="@this, feedgrid" oncomplete="addFeedDialog.hide();update()"
+				action="#{layout.addFeed()}" />
+		</p:dialog>
+	</h:form>
+</body>
+</html>

@@ -1,0 +1,51 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions">
+
+<h:head>
+
+	<style type="text/css">
+.ui-widget-content {
+	border: none;
+	background: none;
+}
+
+.ui-widget,.ui-widget .ui-widget {
+	font-size: 90% !important;
+}
+
+.ui-panel .ui-panel-content {
+	padding: 0;
+}
+
+.stackclass {
+	
+}
+
+.borderless .ui-widget-content {
+	border: 0px solid #A8A8A8;
+}
+</style>
+</h:head>
+<body>
+	<div style="position: fixed; width: 99%; z-index: 999">
+		<ui:include src="menu.xhtml" />
+	</div>
+	<h:form id="previewform">
+		<h:panelGroup binding="#{preview.panelGroup}" layout="block"
+			style="width:#{preview.width}px;height:#{preview.height}px;background-color:##{preview.bgColor};background-image:url('image/#{preview.bgImage}');">
+		</h:panelGroup>
+		<h:outputText value="" id="addtextdialog" />
+		<h:outputText value="" id="addlinkimagedialog" />
+		<h:outputText value="" id="addlocalimagedialog" />
+		<h:outputText value="" id="addyoutubevideodialog" />
+		<h:outputText value="" id="addlocalvideodialog" />
+		<h:outputText value="" id="addwebdialog" />
+		<h:outputText value="" id="addslideshowdialog" />
+	</h:form>
+</body>
+</html>

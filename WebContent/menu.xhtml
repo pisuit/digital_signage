@@ -1,0 +1,33 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions">
+
+<h:head>
+	<style type="text/css">
+.transparent {
+	border: none;
+	background: none;
+}
+</style>
+</h:head>
+<body>
+	<h:form>
+		<p:tabMenu id="tabmenu" activeIndex="#{menu.activeTab}">
+			<p:menuitem value="Layout" icon="ui-icon-pencil"
+				action="#{menu.changeTab('0')}" />
+			<p:menuitem value="Profile" icon="ui-icon-star"
+				action="#{menu.changeTab('1')}" />
+			<p:menuitem value="File" icon="ui-icon-folder-open"
+				action="#{menu.changeTab('2')}" />
+				<p:menuitem value="User" icon="ui-icon-person" action="#{menu.changeTab('3')}"/>
+		</p:tabMenu>
+		<p:commandButton value="Logout"
+			style="position:absolute;top:2px;right:4px" icon="ui-icon-power"
+			process="@this" action="#{login.logout()}" />
+	</h:form>
+</body>
+</html>

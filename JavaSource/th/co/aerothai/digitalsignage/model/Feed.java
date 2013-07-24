@@ -1,0 +1,66 @@
+package th.co.aerothai.digitalsignage.model;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+
+import org.hibernate.annotations.GenericGenerator;
+
+@Entity
+@Table(name="FEED")
+@GenericGenerator(strategy="th.co.aerothai.digitalsignage.utils.HibernateCurrentTimeIDGenerator", name="IDGENERATOR")
+public class Feed {
+	
+	@Id
+	@Column(name="ID")
+	@GeneratedValue(generator="IDGENERATOR")
+	private Long id;
+	
+	@Column(name="URL")
+	private String url;
+	
+	@ManyToOne
+	@JoinColumn(name="PANEL_ID", referencedColumnName="ID")
+	private Panel panel;
+	
+	@Column(name="HEADER")
+	private String header;
+	
+	@Column(name="SCROLLSPEED")
+	private int scrollSpeed = 2;
+	
+	public Long getId() {
+		return id;
+	}
+	public void setId(Long id) {
+		this.id = id;
+	}
+	public String getUrl() {
+		return url;
+	}
+	public void setUrl(String url) {
+		this.url = url;
+	}
+	public Panel getPanel() {
+		return panel;
+	}
+	public void setPanel(Panel panel) {
+		this.panel = panel;
+	}
+	public String getHeader() {
+		return header;
+	}
+	public void setHeader(String header) {
+		this.header = header;
+	}
+	public int getScrollSpeed() {
+		return scrollSpeed;
+	}
+	public void setScrollSpeed(int scrollSpeed) {
+		this.scrollSpeed = scrollSpeed;
+	}
+}

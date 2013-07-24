@@ -1,0 +1,215 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions">
+
+<h:head>
+	<style type="text/css">
+.ui-widget,.ui-widget .ui-widget {
+	font-size: 90% !important;
+}
+</style>
+</h:head>
+<body>
+	<div style="position: fixed; width: 99%; z-index: 999">
+		<ui:include src="menu.xhtml" />
+	</div>
+	<p:spacer height="46" />
+	<h:form id="mainform">
+		<p:hotkey bind="ctrl+c" handler="consoleDialog.show();term.focus()" />
+		<p:fieldset legend="Layout Management">
+			<p:dataTable value="#{profile.layoutList}" var="pro" rows="10"
+				id="layouttable" paginator="true" paginatorPosition="bottom"
+				rowKey="#{pro.id}" rowIndexVar="index"
+				selection="#{profile.selectedLayout}" selectionMode="single">
+				<p:ajax event="rowSelect" update="deletelayoutbutton, editlayoutbtn" />
+				<p:column>
+					<h:outputText value="#{index+1}" />
+				</p:column>
+				<p:column headerText="Layout Name" style="width:85%">
+					<h:outputText value="#{pro.name}" />
+				</p:column>
+				<p:column headerText="Last Modified" style="width:15%">
+					<h:outputText value="#{pro.modifiedTime}">
+						<f:convertDateTime pattern="dd/MM/yyyy hh:mm:ss" timeZone="GMT+7" />
+					</h:outputText>
+				</p:column>
+				<f:facet name="footer">
+					<p:commandButton value="Delete" icon="ui-icon-trash"
+						style="float:right"
+						disabled="#{profile.selectedLayout.id == null}" process="@this"
+						action="#{profile.deleteLayout()}" id="deletelayoutbutton"
+						update="layouttable, :mainform:inputgrid, :mainform:layproinputgrid" />
+					<p:commandButton value="Edit" process="@this" icon="ui-icon-pencil"
+						id="editlayoutbtn" style="float:left"
+						action="#{profile.editLayout()}"
+						disabled="#{profile.selectedLayout.id == null}" />
+				</f:facet>
+			</p:dataTable>
+		</p:fieldset>
+		<p:spacer height="20" />
+		<p:fieldset legend="Profile Management">
+			<p:dataTable rowIndexVar="index" value="#{profile.profileList}"
+				var="pro" rows="10" id="profiletable" paginator="true"
+				paginatorPosition="bottom" selectionMode="single"
+				selection="#{profile.selectedProfile}" rowKey="#{pro.id}"
+				style="width:57%;float:left;margin-right:25px">
+				<p:ajax event="rowSelect"
+					update=":mainform:profilenamegrid, :mainform:layprotable, :mainform:profilebuttongrid"
+					listener="#{profile.profileSelected()}" />
+				<p:column>
+					<h:outputText value="#{index+1}" />
+				</p:column>
+				<p:column headerText="Profile Name" style="width:75%">
+					<h:outputText value="#{pro.name}" />
+				</p:column>
+				<p:column headerText="Last Modified" style="width:25%">
+					<h:outputText value="#{pro.modifiedTime}">
+						<f:convertDateTime pattern="dd/MM/yyyy hh:mm:ss" timeZone="GMT+7" />
+					</h:outputText>
+				</p:column>
+			</p:dataTable>
+			<p:panel header="Input Panel" style="width:40%;float:left">
+				<p:fieldset style="font-size: 100% !important;">
+					<h:panelGrid columns="3" cellpadding="3" id="profilenamegrid">
+						<h:outputText value="Name" />
+						<p:inputText value="#{profile.selectedProfile.name}" size="40" />
+					</h:panelGrid>
+					<p:spacer height="10" />
+					<p:dataTable value="#{profile.layoutProfileList}" var="laypro"
+						rows="5" paginator="true" paginatorPosition="bottom"
+						id="layprotable" rowIndexVar="index" selectionMode="single"
+						selection="#{profile.selectedLayoutProfile}" rowKey="#{laypro}">
+						<p:ajax event="rowSelect" update=":mainform:layproinputgrid"
+							listener="#{profile.layoutProfileSelected()}" />
+						<p:column>
+							<h:outputText value="#{index+1}" />
+						</p:column>
+						<p:column headerText="Layout" style="width:80%">
+							<h:outputText value="#{laypro.layout.name}" />
+						</p:column>
+						<p:column headerText="Timing" style="width:10%">
+							<h:outputText value="#{laypro.timing}" />
+						</p:column>
+						<p:column headerText="Order" style="width:10%">
+							<h:outputText value="#{laypro.ordering}" />
+						</p:column>
+					</p:dataTable>
+					<p:spacer height="10" />
+					<h:panelGrid columns="4" cellpadding="3" id="layproinputgrid">
+						<h:outputText value="Layout" />
+						<p:selectOneMenu value="#{profile.selectedLayoutIDForLayPro}">
+							<f:selectItems value="#{profile.layoutSelectItemList}" />
+						</p:selectOneMenu>
+						<h:outputText value="" />
+						<h:outputText value="" />
+						<h:outputText value="Timing" />
+						<p:inputText value="#{profile.editLayoutProfile.timing}" size="15" />
+						<h:outputText value="Order" />
+						<p:inputText value="#{profile.editLayoutProfile.ordering}"
+							size="15" />
+					</h:panelGrid>
+					<h:panelGrid columns="3" cellpadding="1">
+						<p:commandButton value="Save" icon="ui-icon-disk"
+							process="@this, layproinputgrid"
+							action="#{profile.saveLayoutProfile()}"
+							update="layproinputgrid, layprotable" />
+						<p:commandButton value="Reset" icon="ui-icon-refresh"
+							process="@this" action="#{profile.clearLayoutProfile()}"
+							update="layproinputgrid, layprotable" />
+						<p:commandButton value="Delete" icon="ui-icon-trash"
+							process="@this" action="#{profile.deleteLayoutProfile()}"
+							update="layproinputgrid, layprotable" />
+					</h:panelGrid>
+				</p:fieldset>
+				<p:separator />
+				<h:panelGrid columns="3" cellpadding="1" id="profilebuttongrid">
+					<p:commandButton value="Save" icon="ui-icon-disk"
+						process="@this, layproinputgrid, profilenamegrid"
+						update="profilenamegrid, layproinputgrid, layprotable, profiletable, profilebuttongrid, inputgrid"
+						action="#{profile.saveProfile()}" />
+					<p:commandButton value="Reset" icon="ui-icon-refresh"
+						process="@this" action="#{profile.clearProfile()}"
+						update="layproinputgrid, layprotable, profiletable, profilenamegrid, profilebuttongrid" />
+					<p:commandButton value="Delete" icon="ui-icon-trash"
+						action="#{profile.deleteProfile()}" process="@this"
+						disabled="#{profile.selectedProfile.id == null}"
+						update="layproinputgrid, layprotable, profiletable, profilenamegrid, profilebuttongrid, inputgrid" />
+				</h:panelGrid>
+			</p:panel>
+		</p:fieldset>
+		<p:spacer height="20" />
+		<p:fieldset legend="Layout/Profile Assignment">
+			<p:dataTable value="#{profile.clientProfileList}" var="client"
+				rows="10" id="clienttable" paginator="true"
+				paginatorPosition="bottom" rowKey="#{client.id}" rowIndexVar="index"
+				style="width:67%;float:left;margin-right:25px"
+				selection="#{profile.selectedClientProfile}" selectionMode="single">
+				<p:ajax event="rowSelect"
+					listener="#{profile.clientProfileSelected()}"
+					update=":mainform:inputgrid, :mainform:assignbuttongrid, :mainform:assignbuttongrid" />
+				<p:column>
+					<h:outputText value="#{index+1}" />
+				</p:column>
+				<p:column headerText="Display Name" style="width:20%">
+					<h:outputText value="#{client.clientName}" />
+				</p:column>
+				<p:column headerText="Layout Name" style="width:25%">
+					<h:outputText value="#{client.layout.name}" />
+				</p:column>
+				<p:column headerText="Profile Name" style="width:25%">
+					<h:outputText value="#{client.profile.name}" />
+				</p:column>
+				<p:column headerText="Local" style="width:5%;text-align:center">
+					<p:graphicImage name="check.png" library="images"
+						rendered="#{client.localHost}" />
+				</p:column>
+				<p:column headerText="IP Address" style="width:25%">
+					<h:outputText value="#{client.connectionName}" />
+				</p:column>
+			</p:dataTable>
+			<p:panel header="Input Panel" style="width:30%;float:left">
+				<h:panelGrid columns="2" cellpadding="3" id="inputgrid">
+					<h:outputText value="Display Name" />
+					<p:inputText value="#{profile.editClientProfile.clientName}"
+						size="35" />
+					<h:outputText value="Layout" />
+					<p:selectOneMenu value="#{profile.selectedLayoutID}">
+						<f:selectItems value="#{profile.layoutSelectItemList}" />
+					</p:selectOneMenu>
+					<h:outputText value="Profile" />
+					<p:selectOneMenu value="#{profile.selectedProfileID}">
+						<f:selectItems value="#{profile.profileSelectItemList}" />
+					</p:selectOneMenu>
+					<h:outputText value="Local Host" />
+					<p:selectBooleanCheckbox
+						value="#{profile.editClientProfile.localHost}" />
+					<h:outputText value="IP Address" />
+					<p:inputText value="#{profile.editClientProfile.connectionName}"
+						size="35" />
+				</h:panelGrid>
+				<p:separator />
+				<h:panelGrid columns="3" cellpadding="1" id="assignbuttongrid">
+					<p:commandButton value="Save" icon="ui-icon-disk"
+						action="#{profile.saveClientProfile()}" process="@this, inputgrid"
+						update="clienttable, inputgrid, assignbuttongrid," />
+					<p:commandButton value="Reset" icon="ui-icon-refresh"
+						process="@this" action="#{profile.clearClientProfule()}"
+						update="assignbuttongrid, inputgrid, clienttable" />
+					<p:commandButton value="Delete" icon="ui-icon-trash"
+						process="@this" action="#{profile.deleteClientProfile()}"
+						update="assignbuttongrid, inputgrid, clienttable"
+						disabled="#{profile.selectedClientProfile.id == null}" />
+				</h:panelGrid>
+			</p:panel>
+		</p:fieldset>
+		<p:dialog header="Console" widgetVar="consoleDialog" height="400">
+			<p:terminal widgetVar="term" width="600"
+				commandHandler="#{profile.consoleHandler}" prompt="cmd #"/>
+		</p:dialog>
+	</h:form>
+</body>
+</html>

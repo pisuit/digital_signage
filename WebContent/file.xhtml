@@ -1,0 +1,87 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions">
+
+<h:head>
+	<style type="text/css">
+.ui-widget,.ui-widget .ui-widget {
+	font-size: 90% !important;
+}
+</style>
+</h:head>
+<body>
+	<div style="position: fixed; width: 99%; z-index: 999">
+		<ui:include src="menu.xhtml" />
+	</div>
+	<p:spacer height="46" />
+	<h:form id="fileform">
+		<p:fieldset legend="Image">
+			<p:dataTable value="#{file.imageList}" var="image" rows="10"
+				paginator="true" paginatorPosition="bottom" rowIndexVar="index"
+				selection="#{file.selectedImage}" selectionMode="single"
+				rowKey="#{image}" id="imagetable">
+				<p:ajax event="rowSelect" update="imagedeletebtn" />
+				<f:facet name="footer">
+					<p:commandButton value="Delete" icon="ui-icon-trash"
+						style="float:left" disabled="#{file.selectedImage == null}"
+						id="imagedeletebtn" action="#{file.deleteImage()}" process="@this"
+						update="imagetable" />
+					<p:commandButton value="Upload" icon="ui-icon-copy"
+						style="float:right" type="button" onclick="imageUploadDialog.show()"/>
+				</f:facet>
+				<p:column>
+					<h:outputText value="#{index+1}" />
+				</p:column>
+				<p:column style="width:5%">
+					<p:graphicImage value="image/#{image}"
+						style="width:60px;height:60px" />
+				</p:column>
+				<p:column headerText="Name" style="width:95%">
+					<h:outputText value="#{image}" />
+				</p:column>
+			</p:dataTable>
+		</p:fieldset>
+		<p:spacer height="20" />
+		<p:fieldset legend="Video">
+			<p:dataTable value="#{file.videoList}" var="video" rows="10"
+				paginator="true" paginatorPosition="bottom" rowIndexVar="index"
+				selection="#{file.selectedVideo}" selectionMode="single"
+				rowKey="#{video}" id="videotable">
+				<p:ajax event="rowSelect" update="videodeletebtn" />
+				<f:facet name="footer">
+					<p:commandButton value="Delete" icon="ui-icon-trash"
+						style="float:left" disabled="#{file.selectedVideo == null}"
+						id="videodeletebtn" action="#{file.deleteVideo()}" process="@this"
+						update="videotable" />
+					<p:commandButton value="Upload" icon="ui-icon-copy"
+						style="float:right" type="button" onclick="videoUploadDialog.show()"/>
+				</f:facet>
+				<p:column>
+					<h:outputText value="#{index+1}" />
+				</p:column>
+				<p:column headerText="name" style="width:100%">
+					<h:outputText value="#{video}" />
+				</p:column>
+			</p:dataTable>
+		</p:fieldset>
+	</h:form>
+	<p:dialog header="Image Upload" widgetVar="imageUploadDialog"
+		resizable="false">
+		<h:form enctype="multipart/form-data">
+			<p:fileUpload fileUploadListener="#{file.imageUploadListener}"
+				multiple="true" update=":fileform:imagetable"/>
+		</h:form>
+	</p:dialog>
+	<p:dialog header="Video Upload" widgetVar="videoUploadDialog"
+		resizable="false">
+		<h:form enctype="multipart/form-data">
+			<p:fileUpload fileUploadListener="#{file.videoUploadListener}"
+				multiple="true" update=":fileform:videotable"/>
+		</h:form>
+	</p:dialog>
+</body>
+</html>
